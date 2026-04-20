@@ -9,28 +9,25 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create Railway Project
-        run: |
-          curl -fsSL https://railway.app/install.sh | sh
-          railway init --token $RAILWAY_TOKEN --name qianchuan-backend
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Install Railway CLI
+        run: curl -fsSL https://railway.app/install.sh | sh
 
-      - name: Upload and Deploy
-        run: |
-          railway up --token $RAILWAY_TOKEN
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Initialize Railway Project
+        run: railway init --name qianchuan-backend
+
+      - name: Deploy
+        run: railway up
 
       - name: Set Environment Variables
         run: |
-          railway variables set ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}" --token $RAILWAY_TOKEN
-          railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}" --token $RAILWAY_TOKEN
-          railway variables set APP_ID="${{ secrets.APP_ID }}" --token $RAILWAY_TOKEN
-          railway variables set APP_SECRET="${{ secrets.APP_SECRET }}" --token $RAILWAY_TOKEN
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          railway variables set ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}"
+          railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}"
+          railway variables set APP_ID="${{ secrets.APP_ID }}"
+          railway variables set APP_SECRET="${{ secrets.APP_SECRET }}"
 
