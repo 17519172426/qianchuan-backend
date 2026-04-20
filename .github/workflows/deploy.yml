@@ -1,4 +1,4 @@
-name: Deploy to Railway
+name: Deploy to Render
 
 on:
   push:
@@ -11,23 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy to Railway
-        run: railway up
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Set Environment Variables
-        run: |
-          railway variables set ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}"
-          railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}"
-          railway variables set APP_ID="${{ secrets.APP_ID }}"
-          railway variables set APP_SECRET="${{ secrets.APP_SECRET }}"
-
-      - name: Get Railway URL
-        run: |
-          echo "domain=$(railway domain)" >> $GITHUB_OUTPUT
+      
+      - name: Deploy to Render
+        uses: renderverse/deploy-to-render@v1
+        with:
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
 
