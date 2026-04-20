@@ -27,9 +27,8 @@ jobs:
 
       - name: Initialize Railway Project
         run: |
-          cd api
           railway init --name qianchuan-backend --service api
-          railway up --service api
+          railway up
 
       - name: Set Environment Variables
         run: |
@@ -37,7 +36,6 @@ jobs:
           railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}"
           railway variables set APP_ID="${{ secrets.APP_ID }}"
           railway variables set APP_SECRET="${{ secrets.APP_SECRET }}"
-        working-directory: api
 
       - name: Get Railway URL
         id: railway
