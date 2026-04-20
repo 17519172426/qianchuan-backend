@@ -1,4 +1,5 @@
-buildCommand: npm install && npm start
+buildCommand: npm install
+startCommand: npm start
 env:
   - key: NODE_ENV
     value: production
