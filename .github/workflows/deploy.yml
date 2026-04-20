@@ -15,21 +15,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Railway CLI
-        run: |
-          curl -fsSL https://railway.app/install.sh | sh
-          
-      - name: Configure Railway Token
-        run: |
-          echo "$RAILWAY_TOKEN" > ~/.railway_token
-          railway login < ~/.railway_token || true
-          
+        run: curl -fsSL https://railway.app/install.sh | sh
+
       - name: Deploy to Railway
         run: |
+          export RAILWAY_TOKEN="${{ secrets.RAILWAY_TOKEN }}"
           railway init --name qianchuan-backend 2>/dev/null || true
-          railway up --service api
-          
+          railway up
+
       - name: Set Environment Variables
         run: |
+          export RAILWAY_TOKEN="${{ secrets.RAILWAY_TOKEN }}"
           railway variables set ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}"
           railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}"
           railway variables set APP_ID="${{ secrets.APP_ID }}"
