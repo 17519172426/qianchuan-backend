@@ -12,24 +12,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Railway Login
+      - name: Create Railway Project
         run: |
-          echo "$RAILWAY_TOKEN" > /tmp/railway_token
-          railway login --token-file /tmp/railway_token || railway login < /tmp/railway_token
+          curl -fsSL https://railway.app/install.sh | sh
+          railway init --token $RAILWAY_TOKEN --name qianchuan-backend
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-      - name: Deploy
+      - name: Upload and Deploy
         run: |
-          railway up --detached
+          railway up --token $RAILWAY_TOKEN
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Set Environment Variables
         run: |
-          railway variables set ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}"
-          railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}"
-          railway variables set APP_ID="${{ secrets.APP_ID }}"
-          railway variables set APP_SECRET="${{ secrets.APP_SECRET }}"
+          railway variables set ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}" --token $RAILWAY_TOKEN
+          railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}" --token $RAILWAY_TOKEN
+          railway variables set APP_ID="${{ secrets.APP_ID }}" --token $RAILWAY_TOKEN
+          railway variables set APP_SECRET="${{ secrets.APP_SECRET }}" --token $RAILWAY_TOKEN
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
