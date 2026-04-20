@@ -15,19 +15,12 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Debug Railway Token
+      - name: Login to Railway
         run: |
-          echo "Token exists: ${{ secrets.RAILWAY_TOKEN != '' }}"
-          # Login to Railway
-          echo "${{ secrets.RAILWAY_TOKEN }}" | railway login --token stdin || true
+          echo "${{ secrets.RAILWAY_TOKEN }}" | railway login --token stdin
 
-      - name: Check Railway Projects
+      - name: Deploy to Railway
         run: |
-          railway list 2>/dev/null || echo "No projects found"
-
-      - name: Initialize Railway Project
-        run: |
-          railway init --name qianchuan-backend --service api
           railway up
 
       - name: Set Environment Variables
@@ -40,5 +33,5 @@ jobs:
       - name: Get Railway URL
         id: railway
         run: |
-          railway domain 2>/dev/null || echo "domain="
+          echo "domain=$(railway domain 2>/dev/null)" >> $GITHUB_OUTPUT
 
