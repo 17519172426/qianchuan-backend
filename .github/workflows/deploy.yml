@@ -15,13 +15,10 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Login to Railway
-        run: |
-          echo "${{ secrets.RAILWAY_TOKEN }}" | railway login --token stdin
-
       - name: Deploy to Railway
-        run: |
-          railway up
+        run: railway up
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Set Environment Variables
         run: |
@@ -31,7 +28,6 @@ jobs:
           railway variables set APP_SECRET="${{ secrets.APP_SECRET }}"
 
       - name: Get Railway URL
-        id: railway
         run: |
-          echo "domain=$(railway domain 2>/dev/null)" >> $GITHUB_OUTPUT
+          echo "domain=$(railway domain)" >> $GITHUB_OUTPUT
 
