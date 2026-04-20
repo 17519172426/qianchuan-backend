@@ -11,19 +11,23 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Railway CLI
-        run: curl -fsSL https://railway.app/install.sh | sh
-
-      - name: Initialize Railway Project
-        run: railway init --name qianchuan-backend
-
-      - name: Deploy
-        run: railway up
-
+        run: |
+          curl -fsSL https://railway.app/install.sh | sh
+          
+      - name: Configure Railway Token
+        run: |
+          echo "$RAILWAY_TOKEN" > ~/.railway_token
+          railway login < ~/.railway_token || true
+          
+      - name: Deploy to Railway
+        run: |
+          railway init --name qianchuan-backend 2>/dev/null || true
+          railway up --service api
+          
       - name: Set Environment Variables
         run: |
           railway variables set ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}"
