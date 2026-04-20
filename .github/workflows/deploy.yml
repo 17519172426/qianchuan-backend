@@ -15,10 +15,16 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Deploy to Railway
-        run: railway up
+      - name: Railway Login
+        run: |
+          echo "$RAILWAY_TOKEN" > /tmp/railway_token
+          railway login --token-file /tmp/railway_token || railway login < /tmp/railway_token
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Deploy
+        run: |
+          railway up --detached
 
       - name: Set Environment Variables
         run: |
@@ -26,8 +32,4 @@ jobs:
           railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}"
           railway variables set APP_ID="${{ secrets.APP_ID }}"
           railway variables set APP_SECRET="${{ secrets.APP_SECRET }}"
-
-      - name: Get Railway URL
-        run: |
-          echo "domain=$(railway domain)" >> $GITHUB_OUTPUT
 
