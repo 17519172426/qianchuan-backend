@@ -15,12 +15,32 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Railway Deploy
-        run: railway up
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
-          APP_ID: ${{ secrets.APP_ID }}
-          APP_SECRET: ${{ secrets.APP_SECRET }}
+      - name: Debug Railway Token
+        run: |
+          echo "Token exists: ${{ secrets.RAILWAY_TOKEN != '' }}"
+          # Login to Railway
+          echo "${{ secrets.RAILWAY_TOKEN }}" | railway login --token stdin || true
+
+      - name: Check Railway Projects
+        run: |
+          railway list 2>/dev/null || echo "No projects found"
+
+      - name: Initialize Railway Project
+        run: |
+          cd api
+          railway init --name qianchuan-backend --service api
+          railway up --service api
+
+      - name: Set Environment Variables
+        run: |
+          railway variables set ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}"
+          railway variables set REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}"
+          railway variables set APP_ID="${{ secrets.APP_ID }}"
+          railway variables set APP_SECRET="${{ secrets.APP_SECRET }}"
+        working-directory: api
+
+      - name: Get Railway URL
+        id: railway
+        run: |
+          railway domain 2>/dev/null || echo "domain="
 
